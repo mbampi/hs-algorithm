@@ -15,7 +15,7 @@ The nodes then run the algorithm to elect a leader, and the leader is printed to
 
 ```bash
 
-go run ./... <num_nodes>
+go run cmd/main.go <num_nodes>
 
 ```
 
@@ -24,7 +24,7 @@ go run ./... <num_nodes>
 To run the algorithm with 10 nodes, run the following command:
 ```bash
 
-go run ./... 10
+go run cmd/main.go 10
 
 ```
 
