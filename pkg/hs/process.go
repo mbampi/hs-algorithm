@@ -23,6 +23,9 @@ type Process struct {
 	hasLeftToken  bool // Whether the process has received the its own left token back.
 	hasRightToken bool // Whether the process has received the its own right token back.
 	phase         int  // Current phase of the election.
+
+	greaterLeft  int // UID of the process that sent the greater left token.
+	greaterRight int // UID of the process that sent the greater right token.
 }
 
 // randomUIDs returns a slice of n unique random integers.
@@ -80,7 +83,9 @@ func (p *Process) handleMessage(msg Message, incomingDirection Direction) bool {
 
 	// If the message is from another process and it's an Out message, process it
 	if msg.way == Out {
-		p.handleOutMessage(msg, incomingDirection)
+		if p.handleOutMessage(msg, incomingDirection) {
+			return true
+		}
 	}
 
 	// If the message is from another process and it's an In message, forward it
@@ -112,12 +117,27 @@ func (p *Process) handleReturningToken(incomingDirection Direction) {
 }
 
 // handleOutMessage handles Out messages from another process
-func (p *Process) handleOutMessage(msg Message, incomingDirection Direction) {
+func (p *Process) handleOutMessage(msg Message, incomingDirection Direction) bool {
 	log.Printf("Process %d: Received Out message from neighbor. %s\n", p.uid, msg.String())
 	if msg.uid < p.uid {
 		// ignore message
 		log.Printf("Process %d: ignoring message with uid %d. %s\n", p.uid, msg.uid, msg.String())
 	} else {
+
+		if incomingDirection == Left {
+			if msg.uid > p.greaterLeft {
+				p.greaterLeft = msg.uid
+			}
+		} else { // incomingDirection == Right
+			if msg.uid > p.greaterRight {
+				p.greaterRight = msg.uid
+			}
+		}
+		if p.greaterLeft == p.greaterRight {
+			fmt.Printf("Process %d: I KNOW THE LEADER: %d!\n", p.uid, msg.uid)
+			return true
+		}
+
 		msg.hops--
 		if msg.hops == 0 {
 			msg.way = In
@@ -126,6 +146,8 @@ func (p *Process) handleOutMessage(msg Message, incomingDirection Direction) {
 			p.forwardMessage(msg, incomingDirection)
 		}
 	}
+
+	return false
 }
 
 // forwardMessage forwards a message to the next process in the appropriate direction
