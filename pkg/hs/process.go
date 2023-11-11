@@ -66,9 +66,17 @@ func (p *Process) Run(wg *sync.WaitGroup) {
 func (p *Process) handleMessage(msg Message, incomingDirection Direction) bool {
 	stats.NumMessages.Increment()
 
+	if msg.leader != -1 {
+		log.Printf("Process %d: I KNOW THE LEADER: %d \n", p.uid, msg.leader)
+		p.forwardMessage(msg, incomingDirection)
+		return true
+	}
+
 	// If the message UID is the same as this process and it's an Out message, declare leadership
 	if msg.uid == p.uid && msg.way == Out {
-		fmt.Printf("Process %d: I am the leader!\n", p.uid)
+		fmt.Printf("Process %d: I AM THE LEADER!\n", p.uid)
+		msg.leader = p.uid
+		p.forwardMessage(msg, incomingDirection)
 		return true
 	}
 
@@ -144,13 +152,15 @@ func (p *Process) startElectionPhase(phase int) {
 	log.Printf("Process %d: Starting election phase %d.\n", p.uid, phase)
 
 	p.leftNeighbour <- Message{
-		uid:  p.uid,
-		hops: int(math.Pow(2, float64(phase))),
-		way:  Out,
+		uid:    p.uid,
+		hops:   int(math.Pow(2, float64(phase))),
+		way:    Out,
+		leader: -1,
 	}
 	p.rightNeighbour <- Message{
-		uid:  p.uid,
-		hops: int(math.Pow(2, float64(phase))),
-		way:  Out,
+		uid:    p.uid,
+		hops:   int(math.Pow(2, float64(phase))),
+		way:    Out,
+		leader: -1,
 	}
 }
