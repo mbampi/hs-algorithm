@@ -24,3 +24,10 @@ func (n *MessagesCount) Get() int {
 	defer n.Unlock()
 	return n.num
 }
+
+// Reset resets the number of messages to 0.
+func (n *MessagesCount) Reset() {
+	n.Lock()
+	defer n.Unlock()
+	n.num = 0
+}
