@@ -6,14 +6,16 @@ import (
 )
 
 type Ring struct {
-	processes []Process
+	processes    []Process
+	numProcesses int
 }
 
 // NewRing creates a ring of processes.
 func NewRing(numProcesses int) *Ring {
 	processes := createProcesses(numProcesses)
 	return &Ring{
-		processes: processes,
+		processes:    processes,
+		numProcesses: numProcesses,
 	}
 }
 
@@ -23,8 +25,7 @@ func (r *Ring) Run() {
 	wg.Add(1) // because it should finish when leader knows it is the leader
 
 	// Start processes
-
-	for i := 0; i < len(r.processes); i++ {
+	for i := 0; i < r.numProcesses; i++ {
 		log.Printf("Starting process %d.", i)
 		go r.processes[i].Run(&wg)
 	}
