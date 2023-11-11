@@ -25,33 +25,6 @@ type Process struct {
 	phase         int  // Current phase of the election.
 }
 
-// CreateProcesses creates n processes and connects them in a ring,
-// in a random order.
-func CreateProcesses(numProcesses int) []Process {
-	uids := randomUIDs(numProcesses)
-
-	// Create processes
-	processes := make([]Process, numProcesses)
-	for i := 0; i < numProcesses; i++ {
-		processes[i] = Process{
-			uid:   uids[i],
-			left:  make(chan Message, 1),
-			right: make(chan Message, 1),
-		}
-	}
-
-	for i := 0; i < numProcesses; i++ {
-		leftIndex := (i - 1 + numProcesses) % numProcesses
-		rightIndex := (i + 1) % numProcesses
-
-		log.Printf("Process %d: Connecting to left neighbour %d and right neighbour %d\n", processes[i].uid, processes[leftIndex].uid, processes[rightIndex].uid)
-		processes[i].leftNeighbour = processes[leftIndex].right
-		processes[i].rightNeighbour = processes[rightIndex].left
-	}
-
-	return processes
-}
-
 // randomUIDs returns a slice of n unique random integers.
 func randomUIDs(n int) []int {
 	uids := make([]int, n)

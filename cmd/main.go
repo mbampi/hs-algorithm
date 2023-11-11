@@ -7,25 +7,15 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"sync"
 )
 
 func main() {
 
 	numProcesses := getNumProcesses()
 
-	processes := hs.CreateProcesses(numProcesses)
+	ring := hs.NewRing(numProcesses)
 
-	wg := sync.WaitGroup{}
-	wg.Add(1) // because it should finish when leader knows it is the leader
-
-	// Start processes
-	for i := 0; i < numProcesses; i++ {
-		log.Printf("Starting process %d.", i)
-		go processes[i].Run(&wg)
-	}
-
-	wg.Wait()
+	ring.Run()
 
 	fmt.Printf("Number of messages: %d\n", stats.NumMessages.Get())
 }
