@@ -10,6 +10,8 @@ type Message struct {
 	uid  int // Unique ID of the node that sent the message.
 	hops int // Number of hops the message has to take.
 	way  Way // In or Out.
+
+	leader int // UID of the leader. Used only at the end of the algorithm to communicate the leader to all processes. -1 if the leader is unknown.
 }
 
 // String returns a string representation of a message.

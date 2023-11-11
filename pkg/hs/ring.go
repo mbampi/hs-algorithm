@@ -22,7 +22,7 @@ func NewRing(numProcesses int) *Ring {
 // Start starts the ring.
 func (r *Ring) Run() {
 	wg := sync.WaitGroup{}
-	wg.Add(1) // because it should finish when leader knows it is the leader
+	wg.Add(r.numProcesses)
 
 	// Start processes
 	for i := 0; i < r.numProcesses; i++ {
