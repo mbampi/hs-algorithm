@@ -2,7 +2,6 @@ package hs
 
 import (
 	"log"
-	"sync"
 )
 
 type Ring struct {
@@ -19,17 +18,16 @@ func NewRing(numProcesses int) *Ring {
 
 // Start starts the ring.
 func (r *Ring) Run() {
-	wg := sync.WaitGroup{}
-	wg.Add(1) // because it should finish when leader knows it is the leader
-
-	// Start processes
+	done := make(chan bool)
 
 	for i := 0; i < len(r.processes); i++ {
 		log.Printf("Starting process %d.", i)
-		go r.processes[i].Run(&wg)
+
+		go r.processes[i].Run(done)
 	}
 
-	wg.Wait()
+	// wait until one goroutine is done
+	<-done
 }
 
 // createProcesses creates n processes and connects them in a ring,

@@ -6,7 +6,6 @@ import (
 	"log"
 	"math"
 	"math/rand"
-	"sync"
 )
 
 // Process represents a process in the ring. It contains the UID of the process,
@@ -44,8 +43,8 @@ func randomUIDs(n int) []int {
 	return uids
 }
 
-func (p *Process) Run(wg *sync.WaitGroup) {
-	defer wg.Done()
+func (p *Process) Run(done chan<- bool) {
+	defer func() { done <- true }()
 
 	p.startElectionPhase(0)
 

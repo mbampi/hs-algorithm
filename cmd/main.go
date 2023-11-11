@@ -55,6 +55,7 @@ func testAlgorithm(numProcesses int) int {
 
 	for i := 0; i < numTests; i++ {
 		ring := hs.NewRing(numProcesses)
+
 		ring.Run()
 
 		totalMessages += stats.NumMessages.Get()
