@@ -143,6 +143,8 @@ func (p *Process) handleOutMessage(msg Message, incomingDirection Direction) boo
 		}
 		if p.greaterLeft == p.greaterRight {
 			fmt.Printf("Process %d: I KNOW THE LEADER: %d!\n", p.uid, msg.uid)
+			msg.leader = msg.uid
+			p.forwardMessage(msg, incomingDirection)
 			return true
 		}
 
