@@ -10,6 +10,7 @@ const (
 	Out
 )
 
+// String returns a string representation of a Way.
 func (w Way) String() string {
 	if w == In {
 		return "In"

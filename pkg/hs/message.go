@@ -9,7 +9,7 @@ import "fmt"
 type Message struct {
 	uid  int // Unique ID of the node that sent the message.
 	hops int // Number of hops the message has to take.
-	way  Way // 0 for left, 1 for right.
+	way  Way // In or Out.
 }
 
 // String returns a string representation of a message.

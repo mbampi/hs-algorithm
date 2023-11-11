@@ -71,7 +71,7 @@ func randomUIDs(n int) []int {
 func (p *Process) Run(wg *sync.WaitGroup) {
 	defer wg.Done()
 
-	go p.startElectionPhase(0)
+	p.startElectionPhase(0)
 
 	for {
 		select {
